@@ -10,13 +10,13 @@ screenGui.Parent = playerGui
 
 -- Main UI Frame
 local frame = Instance.new("Frame")
-frame.Size = UDim2.new(0, 320, 0, 140)
+frame.Size = UDim2.new(0, 320, 0, 230)
 frame.Position = UDim2.new(0.5, -160, 0.1, 0)
 frame.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
 frame.BorderSizePixel = 0
 frame.Active = true
 frame.Draggable = true
-frame.Visible = true -- Start visible
+frame.Visible = true
 frame.Parent = screenGui
 
 local uiCorner = Instance.new("UICorner")
@@ -56,7 +56,7 @@ title.Parent = frame
 -- Slider Track
 local sliderFrame = Instance.new("Frame")
 sliderFrame.Size = UDim2.new(0, 280, 0, 8)
-sliderFrame.Position = UDim2.new(0.5, -140, 0.55, 0)
+sliderFrame.Position = UDim2.new(0.5, -140, 0.35, 0)
 sliderFrame.BackgroundColor3 = Color3.fromRGB(180, 180, 180)
 sliderFrame.Parent = frame
 
@@ -80,7 +80,7 @@ sliderButtonCorner.Parent = slider
 -- Time Display
 local timeLabel = Instance.new("TextLabel")
 timeLabel.Size = UDim2.new(1, 0, 0, 30)
-timeLabel.Position = UDim2.new(0, 0, 0.7, 0)
+timeLabel.Position = UDim2.new(0, 0, 0.4, 0)
 timeLabel.BackgroundTransparency = 1
 timeLabel.Text = "Time: 12:00"
 timeLabel.Font = Enum.Font.Gotham
@@ -93,6 +93,54 @@ local glow = Instance.new("UIStroke")
 glow.Thickness = 2
 glow.Color = Color3.fromRGB(255, 255, 255)
 glow.Parent = frame
+
+-- Function to change the skybox
+local function changeSky(skyboxId)
+    if Lighting:FindFirstChildOfClass("Sky") then
+        Lighting:FindFirstChildOfClass("Sky"):Destroy()
+    end
+    local newSky = Instance.new("Sky")
+    newSky.SkyboxUp = skyboxId
+    newSky.SkyboxDn = skyboxId
+    newSky.SkyboxLf = skyboxId
+    newSky.SkyboxRt = skyboxId
+    newSky.SkyboxBk = skyboxId
+    newSky.SkyboxFt = skyboxId
+    newSky.Parent = Lighting
+end
+
+-- Function to reset the skybox to default
+local function resetSky()
+    if Lighting:FindFirstChildOfClass("Sky") then
+        Lighting:FindFirstChildOfClass("Sky"):Destroy()
+    end
+    local defaultSky = Instance.new("Sky")
+    defaultSky.Parent = Lighting
+end
+
+-- Button Factory Function
+local function createButton(text, position, color, action)
+    local button = Instance.new("TextButton")
+    button.Size = UDim2.new(0, 260, 0, 30)
+    button.Position = UDim2.new(0.5, -130, position, 0)
+    button.BackgroundColor3 = color
+    button.Text = text
+    button.Font = Enum.Font.Gotham
+    button.TextSize = 14
+    button.TextColor3 = Color3.fromRGB(255, 255, 255)
+    button.Parent = frame
+
+    local buttonCorner = Instance.new("UICorner")
+    buttonCorner.CornerRadius = UDim.new(0, 5)
+    buttonCorner.Parent = button
+
+    button.MouseButton1Click:Connect(action)
+end
+
+-- Add Sky Buttons (Now with Colors!)
+createButton("🌸 Pink Sky", 0.55, Color3.fromRGB(255, 105, 180), function() changeSky("rbxassetid://271042516") end) -- Pink Sky
+createButton("🌌 Galaxy Sky", 0.7, Color3.fromRGB(70, 30, 180), function() changeSky("rbxassetid://159454299") end) -- Galaxy Sky
+createButton("☀️ Default Sky", 0.85, Color3.fromRGB(100, 100, 100), resetSky) -- Default Sky
 
 -- Slider Dragging Logic
 local dragging = false
