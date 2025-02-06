@@ -1,0 +1,130 @@
+local Players = game:GetService("Players")
+local Lighting = game:GetService("Lighting")
+local UserInputService = game:GetService("UserInputService")
+
+local player = Players.LocalPlayer
+local playerGui = player:FindFirstChildOfClass("PlayerGui")
+
+local screenGui = Instance.new("ScreenGui")
+screenGui.Parent = playerGui
+
+-- Main UI Frame
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0, 320, 0, 140)
+frame.Position = UDim2.new(0.5, -160, 0.1, 0)
+frame.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+frame.BorderSizePixel = 0
+frame.Active = true
+frame.Draggable = true
+frame.Visible = true -- Start visible
+frame.Parent = screenGui
+
+local uiCorner = Instance.new("UICorner")
+uiCorner.CornerRadius = UDim.new(0, 10)
+uiCorner.Parent = frame
+
+-- Gradient Effect
+local gradient = Instance.new("UIGradient")
+gradient.Color = ColorSequence.new{
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 0, 100)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 100, 255))
+}
+gradient.Rotation = 45
+gradient.Parent = frame
+
+-- UI Title (Izaks UI)
+local izaksTitle = Instance.new("TextLabel")
+izaksTitle.Size = UDim2.new(1, 0, 0, 30)
+izaksTitle.BackgroundTransparency = 1
+izaksTitle.Text = "✨ Izaks UI ✨"
+izaksTitle.Font = Enum.Font.GothamBold
+izaksTitle.TextSize = 18
+izaksTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
+izaksTitle.Parent = frame
+
+-- Title
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1, 0, 0, 30)
+title.Position = UDim2.new(0, 0, 0.15, 0)
+title.BackgroundTransparency = 1
+title.Text = "🌞 Time Changer 🌙"
+title.Font = Enum.Font.GothamBold
+title.TextSize = 16
+title.TextColor3 = Color3.fromRGB(255, 255, 255)
+title.Parent = frame
+
+-- Slider Track
+local sliderFrame = Instance.new("Frame")
+sliderFrame.Size = UDim2.new(0, 280, 0, 8)
+sliderFrame.Position = UDim2.new(0.5, -140, 0.55, 0)
+sliderFrame.BackgroundColor3 = Color3.fromRGB(180, 180, 180)
+sliderFrame.Parent = frame
+
+local sliderCorner = Instance.new("UICorner")
+sliderCorner.CornerRadius = UDim.new(1, 0)
+sliderCorner.Parent = sliderFrame
+
+-- Slider Button
+local slider = Instance.new("TextButton")
+slider.Size = UDim2.new(0, 20, 0, 20)
+slider.Position = UDim2.new(0, -10, -0.5, 0)
+slider.BackgroundColor3 = Color3.fromRGB(255, 150, 50)
+slider.Text = ""
+slider.AutoButtonColor = false
+slider.Parent = sliderFrame
+
+local sliderButtonCorner = Instance.new("UICorner")
+sliderButtonCorner.CornerRadius = UDim.new(1, 0)
+sliderButtonCorner.Parent = slider
+
+-- Time Display
+local timeLabel = Instance.new("TextLabel")
+timeLabel.Size = UDim2.new(1, 0, 0, 30)
+timeLabel.Position = UDim2.new(0, 0, 0.7, 0)
+timeLabel.BackgroundTransparency = 1
+timeLabel.Text = "Time: 12:00"
+timeLabel.Font = Enum.Font.Gotham
+timeLabel.TextSize = 14
+timeLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+timeLabel.Parent = frame
+
+-- Glow Effect
+local glow = Instance.new("UIStroke")
+glow.Thickness = 2
+glow.Color = Color3.fromRGB(255, 255, 255)
+glow.Parent = frame
+
+-- Slider Dragging Logic
+local dragging = false
+
+local function updateTime(input)
+    local relativePos = math.clamp((input.Position.X - sliderFrame.AbsolutePosition.X) / sliderFrame.AbsoluteSize.X, 0, 1)
+    slider.Position = UDim2.new(relativePos, -10, -0.5, 0)
+    Lighting.ClockTime = relativePos * 24
+    timeLabel.Text = "Time: " .. math.floor(Lighting.ClockTime) .. ":00"
+end
+
+slider.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = true
+    end
+end)
+
+UserInputService.InputChanged:Connect(function(input)
+    if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+        updateTime(input)
+    end
+end)
+
+UserInputService.InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = false
+    end
+end)
+
+-- Toggle UI with Right Shift
+UserInputService.InputBegan:Connect(function(input)
+    if input.KeyCode == Enum.KeyCode.RightShift then
+        frame.Visible = not frame.Visible
+    end
+end)
